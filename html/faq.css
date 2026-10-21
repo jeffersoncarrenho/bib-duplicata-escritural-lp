@@ -1,0 +1,626 @@
+/* faq.css — BIB Perguntas Frequentes. Reúne wwwroot/css (camadas) do "lp bib final" em um arquivo só; independente de styles.css. */
+@layer reset, tokens, base, layout, components, utilities;
+
+/* ---- fonts.css ---- */
+@layer reset {
+/* Títulos do design aprovado usam Arial Black. Se não houver Arial Black no sistema (Linux/Android),
+   o fallback usa Arial Bold ampliado em ~19% (size-adjust) para ter a mesma largura. */
+@font-face {
+  font-family: "BIB Display";
+  src: local("Arial Black"), local("Arial-Black"), local("ArialBlack");
+  font-weight: 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "BIB Display Fallback";
+  src: local("Arial Bold"), local("Arial-BoldMT"), local("Arimo Bold"), local("Liberation Sans Bold"), local("Helvetica Bold");
+  font-weight: 900;
+  size-adjust: 119%;
+  font-display: swap;
+}
+
+}
+
+/* ---- reset.css ---- */
+@layer reset {
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+img,
+picture,
+svg {
+  display: block;
+  max-width: 100%;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+[hidden] {
+  display: none;
+}
+
+}
+
+/* ---- tokens.css ---- */
+@layer tokens {
+/*
+  Design tokens — BIB Duplicata Escritural
+  Fonte: medições do Figma (frames 1920px) + briefing (desktop 1440 / mobile 390, espaçamento em múltiplos de 8px).
+  Valores "fluidos" (clamp/vw) reproduzem a proporção do frame de 1920px e encolhem até o mobile (inferido).
+*/
+
+:root {
+  /* ---- Cores (primitivas) ---- */
+  --color-navy-900: #001338;
+  --color-navy-800: #0b2452;
+  --color-gold-500: #daa239;
+  --color-gold-600: #b8872a;
+  --color-white: #ffffff;
+  --color-gray-100: #f4f5f7;
+  --color-gray-200: #e2e2e2;
+  --color-gray-400: #909090;
+  --color-gray-500: #6e6e6e;
+  --color-navy-text: #071f60;   /* texto em fundo branco dos slides (medido no aprovado: 7,31,96) */
+  --color-slate-900: #1a2031;
+  --color-slate-600: #5b5f6b;
+
+  /* ---- Cores (semânticas) ---- */
+  --color-bg: var(--color-white);
+  --color-text: var(--color-navy-900);
+  --color-text-muted: var(--color-gray-500);
+  --color-border: var(--color-gray-400);
+  --color-accent: var(--color-gold-500);
+  --color-on-dark: var(--color-white);
+  --color-focus: var(--color-gold-500);
+
+  /* ---- Tipografia ---- */
+  --font-sans: Arial, "Helvetica Neue", Helvetica, sans-serif; /* design aprovado usa Arial; Segoe UI = pendência do cliente */
+  --font-display: "BIB Display", "BIB Display Fallback", Arial, sans-serif; /* Arial Black (títulos); fallback = Arial Bold ampliado (fonts.css) */
+  --fw-regular: 400;
+  --fw-bold: 700;
+
+  --fs-display: max(2rem, calc(var(--u) * 4.19));                     /* título do banner FAQ (Arial Black): 60px @1440 */
+  --fs-faq-title: clamp(1.125rem, calc(var(--u) * 1.875), 1.6875rem);  /* pergunta: 27px @1440 */
+  --fs-faq-body: clamp(1rem, calc(var(--u) * 1.5), 1.35rem);           /* resposta: ~21.6px @1440 */
+  --fs-footer: clamp(0.8125rem, calc(var(--u) * 0.78), 0.9375rem);     /* 13px */
+  --fs-footer-links: clamp(0.875rem, calc(var(--u) * 0.84), 1rem);     /* 14px */
+
+  --lh-display: 1.125;
+  --lh-faq-title: 1.2;
+  --lh-faq-body: 1.7;
+  --lh-footer: 1.45;
+
+  /* ---- Espaçamento (múltiplos de 8px) ---- */
+  --space-1: 0.5rem;   /*  8 */
+  --space-2: 1rem;     /* 16 */
+  --space-3: 1.5rem;   /* 24 */
+  --space-4: 2rem;     /* 32 */
+  --space-5: 2.5rem;   /* 40 */
+  --space-6: 3rem;     /* 48 */
+  --space-8: 4rem;     /* 64 */
+  --space-10: 5rem;    /* 80 */
+  --space-12: 6rem;    /* 96 */
+
+  /* ---- Layout: conteúdo limitado a 1440px; fundos full-bleed ----
+     --u = 1% da largura do contêiner (cresce com a janela até 1440px e trava).
+     As proporções vêm do frame de 1920px do Figma (valores em % do frame × --u). */
+  --container-max: 90rem;                         /* 1440px */
+  --u: min(1vw, 0.9rem);
+  --gutter: clamp(1rem, calc(var(--u) * 6.77), 6.1rem);        /* 130px @1920 → 97px @1440 */
+  --card-gutter: clamp(1rem, calc(var(--u) * 8.85), 8rem);     /* 170px @1920 → 127px @1440 */
+  --header-h: clamp(4.5rem, calc(var(--u) * 8.59), 7.75rem);   /* 165px @1920 → 124px @1440 */
+
+  /* ---- Forma ---- */
+  --radius-card: clamp(1.5rem, calc(var(--u) * 2.34), 2.125rem); /* 45px @1920 → 34px @1440 */
+  --border-w: 1.5px;
+
+  /* ---- Elevação / foco ---- */
+  --focus-ring: 3px solid var(--color-focus);
+
+  /* ---- Breakpoints (informativos — CSS não aceita var() em @media) ---- */
+  --bp-mobile: 390px;    /* frame mobile do briefing */
+  --bp-tablet: 768px;    /* inferido: troca de layout (@media min-width: 48em) */
+  --bp-desktop: 1440px;  /* frame desktop do briefing (@media min-width: 90em) */
+
+  /* ---- Movimento ---- */
+  --duration-fast: 150ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+
+}
+
+/* ---- base.css ---- */
+@layer base {
+body {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-regular);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+}
+
+/* ---- layout.css ---- */
+@layer layout {
+/* Estrutura da página (shell). Espaços entre blocos vêm dos tokens. */
+.page {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page__main {
+  flex: 1 0 auto;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+}
+
+/* Contêiner do carrossel (Home): sem o teto de 1440px da FAQ — o conteúdo deve ocupar
+   a largura da tela de verdade; só um teto de segurança bem acima do frame do Figma (1920px)
+   para não esticar ao infinito em monitores ultrawide. */
+.slide-container {
+  width: 100%;
+  max-width: 120rem;
+  margin-inline: auto;
+}
+
+.faq__inner {
+  padding-inline: var(--card-gutter);
+}
+
+.faq {
+  padding-block: var(--space-6) var(--space-8);
+}
+
+@media (min-width: 48em) {
+  .faq {
+    /* 140px acima e ~188px abaixo do card no frame 1920 */
+    padding-block: clamp(var(--space-6), calc(var(--u) * 7.3), 6.6rem) clamp(var(--space-8), calc(var(--u) * 9.8), 8.8rem);
+  }
+}
+
+}
+
+/* ---- components/site-header.css ---- */
+@layer components {
+/* SiteHeader — Figma: "Header" (1920×165) */
+.site-header {
+  background: var(--color-white);
+  min-height: var(--header-h);
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: var(--header-h);
+  padding-inline: var(--gutter);
+}
+
+.site-header__brand {
+  display: block;
+  line-height: 0;
+}
+
+.site-header__logo {
+  width: clamp(7.5rem, calc(var(--u) * 15.6), 14rem); /* 300px @1920 → 225px @1440 */
+  height: auto;
+}
+
+@media (min-width: 48em) {
+  .site-header__inner {
+    justify-content: flex-start;
+  }
+}
+
+}
+
+/* ---- components/hero.css ---- */
+@layer components {
+/* Hero — Figma: "Banner / hero" (1920×795): skyline + gráfico (foto + anéis) + título editável.
+   Mobile (inferido): gráfico em cima, título embaixo. Desktop: composição do Figma. */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--color-navy-900);
+  color: var(--color-gold-500);
+  display: flex;
+  flex-direction: column;
+}
+
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 35% 40%;
+}
+
+.hero__media {
+  position: relative;
+  height: 62vw;
+  overflow: hidden;
+}
+
+.hero__graphic {
+  position: absolute;
+  top: 0;
+  left: -8vw;
+  width: 120vw;
+  max-width: none;
+  height: auto;
+}
+
+.hero__title {
+  padding: var(--space-4) var(--gutter) var(--space-6);
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  font-weight: 900;
+  line-height: var(--lh-display);
+}
+
+@media (min-width: 48em) {
+  .hero {
+    display: block;
+    height: clamp(21rem, calc(var(--u) * 41.4), 37.25rem); /* 795px @1920 → 596px @1440 */
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    height: auto;
+  }
+
+  .hero__graphic {
+    left: auto;
+    right: 0;
+    width: calc(var(--u) * 62.5); /* 1200px @1920 → 900px @1440; ancora na borda direita da janela */
+  }
+
+  .hero__inner {
+    position: relative;
+    height: 100%;
+  }
+
+  .hero__title {
+    position: absolute;
+    left: 7.3%; /* 140px @1920, relativo ao contêiner */
+    top: 43%;
+    transform: translateY(-50%);
+    padding: 0;
+  }
+}
+
+}
+
+/* ---- components/button.css ---- */
+@layer components {
+/* Button — Figma: "Button/CTA Pill Solid" (grande ≈66px, pequeno ≈35px @1920) e "Button/CTA Pill Outline" */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-height: 3rem;
+  padding: var(--space-1) var(--space-3);
+  border: 2px solid var(--color-gold-500);
+  border-radius: 999px;
+  background: var(--color-gold-500);
+  color: var(--color-white);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.9rem;
+  line-height: 1.15;
+  text-align: center;
+  transition: background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard);
+}
+
+.btn:hover {
+  background: var(--color-gold-600);
+  border-color: var(--color-gold-600);
+}
+
+.btn--outline {
+  background: transparent;
+  color: var(--color-gold-500);
+}
+
+.btn--outline:hover {
+  background: var(--color-gold-500);
+  color: var(--color-white);
+}
+
+@media (min-width: 48em) {
+  .btn--lg {
+    min-height: calc(var(--u) * 3.4375);
+    padding-inline: calc(var(--u) * 2.6562);
+    font-size: max(1.0125rem, calc(var(--u) * 1.8229));
+  }
+
+  .btn--sm {
+    min-height: calc(var(--u) * 1.8229);
+    min-width: calc(var(--u) * 19.8958);
+    padding: 0 calc(var(--u) * 1.2500);
+    font-size: max(0.7313rem, calc(var(--u) * 1.2344));
+  }
+}
+
+}
+
+/* ---- components/accordion.css ---- */
+@layer components {
+/* Accordion (FAQ) — Figma: "FAQ/Accordion" (variantes Aberto=1..4) e "FAQ/Item" (State=Aberto|Fechado).
+   Regra de produto: um item aberto por vez; o primeiro abre por padrão e sempre há um aberto. */
+.accordion {
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: clamp(1rem, calc(var(--u) * 1.82), 1.6rem) clamp(1rem, calc(var(--u) * 3.9), 3.5rem) clamp(2rem, calc(var(--u) * 4.48), 4rem) clamp(1rem, calc(var(--u) * 2.5), 2.25rem);
+}
+
+.accordion__item {
+  border-bottom: var(--border-w) solid var(--color-border);
+}
+
+.accordion__item--open {
+  border-bottom: 0;
+}
+
+.accordion__heading {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.accordion__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: clamp(3.5rem, calc(var(--u) * 4.58), 4.125rem); /* 88px @1920 → 66px @1440 */
+  padding-block: var(--space-1);
+  padding-inline-end: clamp(0.5rem, calc(var(--u) * 1.67), 1.5rem);
+  font-size: var(--fs-faq-title);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-faq-title);
+  color: var(--color-text-muted);
+}
+
+.accordion__trigger[aria-expanded="true"] {
+  background: var(--color-gray-200);
+  border-bottom: var(--border-w) solid var(--color-border);
+  cursor: default;
+}
+
+.accordion__icon {
+  flex: none;
+  width: clamp(1.25rem, calc(var(--u) * 1.56), 1.4rem);
+  height: auto;
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+
+.accordion__trigger[aria-expanded="true"] .accordion__icon {
+  transform: rotate(180deg);
+}
+
+.accordion__panel {
+  padding-block: clamp(1rem, calc(var(--u) * 1.98), 1.8rem) clamp(0.75rem, calc(var(--u) * 1.2), 1.1rem);
+  font-size: var(--fs-faq-body);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-faq-body);
+  color: var(--color-text-muted);
+}
+
+/* Sem JavaScript: todas as respostas ficam visíveis (progressive enhancement). */
+html:not(.js) .accordion__panel[hidden] {
+  display: block;
+}
+
+.accordion__panel > * + * {
+  margin-top: var(--space-2);
+}
+
+.accordion__panel ul {
+  list-style: disc;
+  padding-inline-start: var(--space-4);
+}
+
+.accordion__panel li + li {
+  margin-top: var(--space-1);
+}
+
+.accordion__panel a {
+  text-decoration: underline;
+}
+
+html[data-env="development"] .accordion__item[data-todo] {
+  outline-offset: -2px;
+}
+
+}
+
+/* ---- components/site-footer.css ---- */
+@layer components {
+/* SiteFooter — Figma: faixa escura (contato) + faixa cinza (políticas). Fundos full-bleed, conteúdo no contêiner. */
+.site-footer {
+  color: var(--color-on-dark);
+}
+
+.site-footer__contact {
+  background: var(--color-slate-900);
+  padding-block: var(--space-3);
+  font-size: var(--fs-footer);
+  line-height: var(--lh-footer);
+}
+
+.site-footer__inner {
+  padding-inline: var(--space-2);
+}
+
+.site-footer__grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.site-footer__brand {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.site-footer__logo {
+  flex: none;
+  width: clamp(6rem, calc(var(--u) * 8.2), 7.4rem); /* 157px @1920 → 118px @1440 */
+  height: auto;
+}
+
+.site-footer__address {
+  font-style: normal;
+}
+
+.site-footer__links {
+  background: var(--color-slate-600);
+  padding-block: var(--space-3);
+  font-size: var(--fs-footer-links);
+  line-height: 1.7;
+}
+
+.site-footer__links-list {
+  display: grid;
+  gap: 0;
+}
+
+.site-footer a:hover,
+.site-footer a:focus-visible {
+  text-decoration: underline;
+}
+
+@media (min-width: 64em) {
+  .site-footer__contact {
+    padding-block: var(--space-2);
+  }
+
+  .site-footer__contact .site-footer__inner {
+    padding-inline: calc(var(--u) * 1.95);
+  }
+
+  .site-footer__grid {
+    grid-template-columns: 4.48fr 3.48fr 1fr;
+    align-items: start;
+    column-gap: 0;
+  }
+
+  .site-footer__links {
+    padding-block: clamp(1rem, calc(var(--u) * 1.25), 1.15rem);
+  }
+
+  .site-footer__links .site-footer__inner {
+    padding-inline: calc(var(--u) * 6.62) calc(var(--u) * 3.15);
+  }
+
+  .site-footer__links-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+}
+
+/* ---- utilities.css ---- */
+@layer utilities {
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-2);
+  top: -4rem;
+  z-index: 100;
+  padding: var(--space-1) var(--space-2);
+  background: var(--color-navy-900);
+  color: var(--color-white);
+  font-weight: var(--fw-bold);
+}
+
+.skip-link:focus {
+  top: var(--space-1);
+}
+
+/* Marcador de pendências (links sem destino): só aparece em ambiente de desenvolvimento. */
+html[data-env="development"] [data-todo] {
+  outline: 2px dashed #e53935;
+  outline-offset: 2px;
+}
+
+}

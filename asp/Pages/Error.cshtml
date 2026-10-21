@@ -1,0 +1,15 @@
+@page
+@model ErrorModel
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Erro | BIB</title></head>
+<body>
+<h1>Erro.</h1>
+<h2>Ocorreu um erro ao processar sua solicitação.</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    </p>
+}
+</body></html>
